@@ -127,7 +127,7 @@ const app = {
                 const progressPercent = Math.floor(audio.currentTime / audio.duration * 100);
                 progress.value = progressPercent;
 
-                console.log(progressPercent)
+                // console.log(progressPercent)
             }
         }
 
