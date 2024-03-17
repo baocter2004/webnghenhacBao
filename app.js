@@ -1,4 +1,3 @@
-
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
@@ -92,6 +91,19 @@ const app = {
     handleEvents: function () {
         const cdWidth = cd.offsetWidth;
 
+        // xử lý cd quay / dừng
+        const cdAnimation = cd.animate ([
+            {
+                transform: 'rotate(360deg)'
+            }
+        ], {
+            duration: 10000, // 10 giây
+            iterations: Infinity
+        })
+
+        // dừng luôn : 
+        cdAnimation.pause();
+
         // xử lý phóng to / thu nhỏ cd
         document.onscroll = function () {
             const scroll = document.documentElement.scrollTop || window.scrollY;
@@ -109,10 +121,12 @@ const app = {
             // click để bật hoặc tắt
             if(isPlaying) {
                 audio.pause();
+                cdAnimation.pause();
                 player.classList.remove("playing");
                 isPlaying = isPlaying;
             } else {
                 audio.play();
+                cdAnimation.play();
                 player.classList.add("playing");
             }
             isPlaying = !isPlaying;
@@ -125,6 +139,7 @@ const app = {
 
             if(audio.duration) {
                 // audio.duration : tong so giay bai hat
+                // audio.currentTime : 
                 const progressPercent = Math.floor(audio.currentTime / audio.duration * 100);
                 progress.value = progressPercent;
 
@@ -134,15 +149,17 @@ const app = {
 
         // Tiến Độ Bài Hát : Tua
         progress.onchange = function (e) {
+            // console.log(e.target.value / 100 * audio.duration);
 
-            console.log(e.target.value / 100 * audio.duration);
+            const seekTime = e.target.value / 100 * audio.duration;
+            audio.currentTime = seekTime;
         }
 
 
         // chuyển tiếp bài hát
 
         nextBtn.onclick = function () {
-
+            
         }
     },
     loadCurrentSong: function () {
