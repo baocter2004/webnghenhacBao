@@ -7,9 +7,15 @@ const audio = $('#audio');
 const playBtn = $('.btn-toggle-play');
 const player = $('.player');
 const cd = $('.cd');
+// controller
 const nextBtn = $('.btn-next');
+const prevBtn = $('.btn-prev');
+const randomBtn = $('.btn-random');
+const repeatBtn = $('.btn-repeat');
 //  thanh chay am nhac
 const progress = $('.progress');
+// chuyển bài
+const song = $('.song');
 
 
 
@@ -38,7 +44,7 @@ const app = {
         },
         {
             name: "Trái Đất Ôm Mặt Trời",
-            singer: "",
+            singer: "ai Nhớ ?",
             path: "src/trai_dat_om_mat_troi.mp3",
             image:
                 "img/trai_dat_om_mat_troi.jpg"
@@ -47,19 +53,19 @@ const app = {
             name: "Anh Đã Quen Với Cô Đơn",
             singer: "Soobin Hoàng Sơn",
             path: "src/anh_da_quen_voi_co_don.mp3",
-            image:"img/anh_da_quen_voi_co_don.jpg"
+            image: "img/anh_da_quen_voi_co_don.jpg"
         },
         {
             name: "KARIK - BẠN ĐỜI (FT. GDUCKY)",
             singer: "Karik ft. Gducky",
-            path:"src/ban_doi.mp3",
-            image:"img/ban_doi.jpg"
+            path: "src/bandoi.mp3",
+            image: "img/ban_doi.jpg"
         },
         {
             name: "Tình Yêu Chậm Trễ",
             singer: "MOON",
             path: "src/tinh_yeu_cham_tre.mp3",
-            image:"img/tinh_yeu_cham_tre.jpg"
+            image: "img/tinh_yeu_cham_tre.jpg"
         }
     ],
     render: function () {
@@ -81,6 +87,7 @@ const app = {
         // render ra
         $('.playlist').innerHTML = htmls.join('');
     },
+
     defineProperties: function () {
         Object.defineProperty(this, 'currentSong', {
             get: function () {
@@ -88,11 +95,13 @@ const app = {
             }
         })
     },
+
     handleEvents: function () {
+        const _this = this;
         const cdWidth = cd.offsetWidth;
 
         // xử lý cd quay / dừng
-        const cdAnimation = cd.animate ([
+        const cdAnimation = cd.animate([
             {
                 transform: 'rotate(360deg)'
             }
@@ -119,7 +128,7 @@ const app = {
 
         playBtn.onclick = function () {
             // click để bật hoặc tắt
-            if(isPlaying) {
+            if (isPlaying) {
                 audio.pause();
                 cdAnimation.pause();
                 player.classList.remove("playing");
@@ -137,7 +146,7 @@ const app = {
         audio.ontimeupdate = function () {
             // tính ra phần trăm nhạc chạy theo
 
-            if(audio.duration) {
+            if (audio.duration) {
                 // audio.duration : tong so giay bai hat
                 // audio.currentTime : 
                 const progressPercent = Math.floor(audio.currentTime / audio.duration * 100);
@@ -150,7 +159,6 @@ const app = {
         // Tiến Độ Bài Hát : Tua
         progress.onchange = function (e) {
             // console.log(e.target.value / 100 * audio.duration);
-
             const seekTime = e.target.value / 100 * audio.duration;
             audio.currentTime = seekTime;
         }
@@ -159,7 +167,24 @@ const app = {
         // chuyển tiếp bài hát
 
         nextBtn.onclick = function () {
-            
+            _this.nextSong();
+            audio.play();
+            player.classList.add("playing");
+        }
+
+        //  lùi bài hát
+
+        prevBtn.onclick = function () {
+            _this.prevSong();
+            audio.play();
+            player.classList.add("playing");
+        }
+
+        // bài hát ngẫu nhiên 
+        randomBtn.onclick = function () {
+            _this.randomSong();
+            audio.play();
+            player.classList.add("playing");
         }
     },
     loadCurrentSong: function () {
@@ -167,6 +192,34 @@ const app = {
         cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
         audio.src = this.currentSong.path;
     },
+    // chuyển bài next 
+    nextSong: function () {
+        //  next cái chuyển bải
+        this.currentIndex++;
+        if (this.currentIndex >= this.songs.length) {
+            this.currentIndex = 0;
+        }
+        console.log(this.currentSong);
+        this.loadCurrentSong();
+    },
+    // lùi bài hát
+    prevSong: function () {
+        // lùi bài liền
+        this.currentIndex--;
+        if (this.currentIndex < 0) {
+            this.currentIndex = this.songs.length - 1;
+        }
+        console.log(this.currentSong);
+        this.loadCurrentSong();
+    },
+    // đổi bài ngẫu nhiên
+    randomSong: function () {
+        const random = Math.floor(Math.random() * this.songs.length);
+        this.currentIndex = random;
+        // console.log(this.currentIndex)
+        this.loadCurrentSong();
+    }
+    ,
     start: function () {
         // Định nghĩa các thuộc tính
         this.defineProperties();
