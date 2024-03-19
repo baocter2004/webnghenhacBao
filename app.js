@@ -69,9 +69,9 @@ const app = {
         }
     ],
     render: function () {
-        const htmls = this.songs.map(song => {
+        const htmls = this.songs.map((song , index) => {
             return `      
-                <div class="song">
+                <div class="song ${index === this.currentIndex ? "active" : ""}">
                     <div class="thumb"
                         style="background-image: url('${song.image}')">
                     </div>
@@ -125,6 +125,8 @@ const app = {
         // xử lý play
 
         var isPlaying = false;
+        var isRandom = false;
+        isRepeat = false;
 
         playBtn.onclick = function () {
             // click để bật hoặc tắt
@@ -167,9 +169,14 @@ const app = {
         // chuyển tiếp bài hát
 
         nextBtn.onclick = function () {
-            _this.nextSong();
+            if (_this.isRandom) {
+                _this.randomSong();
+            } else {
+                _this.nextSong();
+            }
             audio.play();
             player.classList.add("playing");
+            _this.render();
         }
 
         //  lùi bài hát
@@ -182,9 +189,21 @@ const app = {
 
         // bài hát ngẫu nhiên 
         randomBtn.onclick = function () {
-            _this.randomSong();
-            audio.play();
-            player.classList.add("playing");
+            _this.isRandom = !this.isRandom;
+            randomBtn.classList.toggle("active", _this.isRandom);
+        }
+        // quay trở về ban đầu
+        audio.onended = function () {
+            if(isRepeat) {
+                nextBtn.click();
+            } else {
+                audio.play();
+            }
+        }
+        // xử lý phát lại = click vào sẽ bật chức năng
+        repeatBtn.onclick = function () {
+            _this.isRepeat = !isRepeat;
+            repeatBtn.classList.toggle("active",_this.isRepeat);
         }
     },
     loadCurrentSong: function () {
@@ -199,7 +218,7 @@ const app = {
         if (this.currentIndex >= this.songs.length) {
             this.currentIndex = 0;
         }
-        console.log(this.currentSong);
+        //        console.log(this.currentSong);
         this.loadCurrentSong();
     },
     // lùi bài hát
@@ -209,17 +228,19 @@ const app = {
         if (this.currentIndex < 0) {
             this.currentIndex = this.songs.length - 1;
         }
-        console.log(this.currentSong);
+        //        console.log(this.currentSong);
         this.loadCurrentSong();
     },
     // đổi bài ngẫu nhiên
     randomSong: function () {
-        const random = Math.floor(Math.random() * this.songs.length);
+        let random;
+        do {
+            random = Math.floor(Math.random() * this.songs.length);
+            // console.log(this.currentIndex);
+        } while (random === this.currentIndex);
         this.currentIndex = random;
-        // console.log(this.currentIndex)
         this.loadCurrentSong();
-    }
-    ,
+    },
     start: function () {
         // Định nghĩa các thuộc tính
         this.defineProperties();
