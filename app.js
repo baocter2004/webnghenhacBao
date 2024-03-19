@@ -126,7 +126,7 @@ const app = {
 
         var isPlaying = false;
         var isRandom = false;
-        isRepeat = false;
+        var isRepeat = false;
 
         playBtn.onclick = function () {
             // click để bật hoặc tắt
@@ -202,8 +202,8 @@ const app = {
         }
         // xử lý phát lại = click vào sẽ bật chức năng
         repeatBtn.onclick = function () {
-            _this.isRepeat = !isRepeat;
-            repeatBtn.classList.toggle("active",_this.isRepeat);
+            _this.isRepeat = !_this.isRepeat;
+            repeatBtn.classList.toggle("active", _this.isRepeat);
         }
     },
     loadCurrentSong: function () {
