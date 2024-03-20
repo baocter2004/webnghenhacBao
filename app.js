@@ -17,11 +17,16 @@ const progress = $('.progress');
 // chuyển bài
 const song = $('.song');
 
+const playList = $('.playlist');
+
 
 
 const app = {
 
     currentIndex: 0,
+    isPlaying: false,
+    isRandom: false,
+    isRepeat: false,
     songs: [
         {
             name: "Đi Để Trở Về 2",
@@ -69,7 +74,7 @@ const app = {
         }
     ],
     render: function () {
-        const htmls = this.songs.map((song , index) => {
+        const htmls = this.songs.map((song, index) => {
             return `      
                 <div class="song ${index === this.currentIndex ? "active" : ""}">
                     <div class="thumb"
@@ -124,23 +129,19 @@ const app = {
 
         // xử lý play
 
-        var isPlaying = false;
-        var isRandom = false;
-        var isRepeat = false;
-
         playBtn.onclick = function () {
             // click để bật hoặc tắt
-            if (isPlaying) {
+            if (_this.isPlaying) {
                 audio.pause();
                 cdAnimation.pause();
                 player.classList.remove("playing");
-                isPlaying = isPlaying;
+                _this.isPlaying = _this.isPlaying;
             } else {
                 audio.play();
                 cdAnimation.play();
                 player.classList.add("playing");
             }
-            isPlaying = !isPlaying;
+            _this.isPlaying = !_this.isPlaying;
         }
 
 
@@ -177,6 +178,7 @@ const app = {
             audio.play();
             player.classList.add("playing");
             _this.render();
+            _this.scrollToActiveSong();
         }
 
         //  lùi bài hát
@@ -185,6 +187,7 @@ const app = {
             _this.prevSong();
             audio.play();
             player.classList.add("playing");
+            _this.scrollToActiveSong();
         }
 
         // bài hát ngẫu nhiên 
@@ -194,7 +197,7 @@ const app = {
         }
         // quay trở về ban đầu
         audio.onended = function () {
-            if(isRepeat) {
+            if (!_this.isRepeat) {
                 nextBtn.click();
             } else {
                 audio.play();
@@ -203,9 +206,25 @@ const app = {
         // xử lý phát lại = click vào sẽ bật chức năng
         repeatBtn.onclick = function () {
             _this.isRepeat = !_this.isRepeat;
+            console.log(_this.isRepeat)
             repeatBtn.classList.toggle("active", _this.isRepeat);
         }
+
+        // lắng nghe hành vi click vào playlist
+        playList.onclick = function (e) {
+            console.log(e.target)
+        }
     },
+    // Kéo đến bài khi active song
+    scrollToActiveSong: function () {
+        setTimeout(() => {
+            $('.song.active').scrollIntoView({
+                behavior: "smooth",
+                block: 'nearest'
+            });
+        }, 300);
+    }
+    ,
     loadCurrentSong: function () {
         heading.innerText = this.currentSong.name;
         cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
@@ -257,3 +276,5 @@ const app = {
 }
 
 app.start();
+
+// cộng thêm px
